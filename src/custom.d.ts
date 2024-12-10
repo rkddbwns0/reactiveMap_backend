@@ -7,6 +7,7 @@ declare global {
         id: number;
         username: string;
         kakaoId: string;
+        profile_image: string;
       };
     }
   }

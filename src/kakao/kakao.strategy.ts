@@ -9,7 +9,14 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: configService.get('KAKAO_CLIENT_ID'),
       callbackURL: `${configService.get('KAKAO_CALLBACK_URL')}`,
+      clientSecret: configService.get('KAKAO_SECRET_KEY'),
     });
+  }
+
+  authorizationParams(): any {
+    return {
+      prompt: 'login',
+    };
   }
 
   async validate(
@@ -24,7 +31,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
         id: _json.id,
         username: _json.kakao_account.name,
         kakaoId: _json.kakao_account.email,
+        profile_image: _json.properties.profile_image,
       };
+
       done(null, user);
     } catch (error) {
       console.error(error);

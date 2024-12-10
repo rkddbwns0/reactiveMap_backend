@@ -9,6 +9,8 @@ import axios from 'axios';
 
 @Injectable()
 export class KakaoLogin {
+  private kakaoToken: { [key: string]: string } = {};
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -16,8 +18,18 @@ export class KakaoLogin {
     private readonly configService: ConfigService,
   ) {}
 
-  async getJWT(id: number, username: string, kakaoId: string) {
-    const user = await this.userKakaoLogin(id, username, kakaoId);
+  async getJWT(
+    id: number,
+    username: string,
+    kakaoId: string,
+    profile_image: string,
+  ) {
+    const user = await this.userKakaoLogin(
+      id,
+      username,
+      kakaoId,
+      profile_image,
+    );
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user);
     return { accessToken, refreshToken };
@@ -27,11 +39,11 @@ export class KakaoLogin {
     id: number,
     username: string,
     kakaoId: string,
+    profile_image: string,
   ): Promise<User> {
     let user: User = await this.userRepository.findOne({
       where: { kakaoId: kakaoId },
     });
-
     const provider = 'kakao';
     if (!user) {
       user = await this.userRepository.create({
@@ -39,7 +51,12 @@ export class KakaoLogin {
         id: id,
         name: username,
         kakaoId: kakaoId,
+        profile_image: profile_image,
       });
+      console.log('새로 생성되었습니다');
+      await this.userRepository.save(user);
+    } else {
+      user.profile_image = profile_image;
       await this.userRepository.save(user);
     }
     return user;
@@ -50,6 +67,7 @@ export class KakaoLogin {
       id: user.id,
       username: user.name,
       kakaoId: user.kakaoId,
+      profile_image: user.profile_image,
     };
 
     return this.jwtService.sign(payload);
@@ -102,23 +120,19 @@ export class KakaoLogin {
     }
   }
 
-  async revokeKakaoToken(accessToken: string): Promise<void> {
-    try {
-      const response = await axios.post(
-        'https://kapi.kakao.com/v1/user/logout',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+  async logout(cookieInfo: any): Promise<void> {
+    const decodedRefreshToken = this.jwtService.verify(
+      cookieInfo.kakaoRefreshToken,
+      {
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+      },
+    );
+    const kakaoId = decodedRefreshToken.kakaoId;
+    const user = await this.userRepository.findOne({
+      where: { kakaoId: kakaoId },
+    });
 
-      if (response.status !== 200) {
-        throw new UnauthorizedException('크아악');
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    user.refresh_token = null;
+    await this.userRepository.save(user);
   }
 }

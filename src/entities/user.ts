@@ -22,7 +22,10 @@ export class User {
   @Column({ type: 'varchar' })
   kakaoId: string;
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar' })
+  profile_image: string;
+
+  @Column({ type: 'varchar', default: null })
   refresh_token: string;
 
   @CreateDateColumn({ type: 'datetime' })

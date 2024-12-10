@@ -2,10 +2,9 @@ import {
   Controller,
   Get,
   HttpCode,
-  Post,
+  Query,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { KakaoLogin } from './kakao.service';
@@ -23,13 +22,19 @@ export class KakaoLoginController {
   @Get('callback')
   @UseGuards(AuthGuard('kakao'))
   @HttpCode(301)
-  async getKakaoInfo(@Res() res: Response, @Req() req: Request) {
+  async getKakaoInfo(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('code') code: string,
+  ) {
     try {
       const { accessToken, refreshToken } = await this.kakaoLogin.getJWT(
         req.user.id,
         req.user.username,
         req.user.kakaoId,
+        req.user.profile_image,
       );
+
       res.cookie('accessToken', accessToken, { httpOnly: true });
       res.cookie('refreshToken', refreshToken, { httpOnly: true });
       res.cookie('isLoggedIn', true, { httpOnly: false });
@@ -48,10 +53,14 @@ export class KakaoLoginController {
   @Get('logout')
   @HttpCode(200)
   async logout(@Req() req: Request, @Res() res: Response) {
-    const kakaoAccessToken = req.cookies['kakaoAccessToken'];
+    const cookieInfo = {
+      kakaoAccessToken: req.cookies['accessToken'],
+      kakaoRefreshToken: req.cookies['refreshToken'],
+      LoggedIn: req.cookies['isLoggedIn'],
+    };
 
-    if (kakaoAccessToken) {
-      await this.kakaoLogin.revokeKakaoToken(kakaoAccessToken);
+    if (cookieInfo) {
+      await this.kakaoLogin.logout(cookieInfo);
     }
 
     res.clearCookie('accessToken');
@@ -64,24 +73,5 @@ export class KakaoLoginController {
   @UseGuards(AuthGuard('jwt'))
   get(@Req() req: Request) {
     return 'JWT 인증 성공';
-  }
-
-  @Get('refresh')
-  @HttpCode(200)
-  async refresh(@Req() req: Request, @Res() res: Response) {
-    try {
-      const newAccessToken = await this.kakaoLogin.refresh(
-        req.cookies.refreshToken,
-      );
-      res.cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-      });
-      return res.send();
-    } catch (error) {
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken');
-      res.clearCookie('isLoggedIn');
-      throw new UnauthorizedException('ㅎㅇ');
-    }
   }
 }

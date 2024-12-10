@@ -17,12 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }
-
   async validate(payload) {
     return {
       id: payload.id,
       username: payload.username,
       kakaoId: payload.kakaoId,
+      profile_image: payload.profile_image,
     };
   }
 }
