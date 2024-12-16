@@ -2,8 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Record } from './record';
+import { Bookmark } from './bookmark';
 
 @Entity({ name: 'user' })
 export class User {
@@ -13,7 +16,7 @@ export class User {
   @Column({ type: 'varchar' })
   provider: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   id: number;
 
   @Column({ type: 'varchar' })
@@ -30,4 +33,10 @@ export class User {
 
   @CreateDateColumn({ type: 'datetime' })
   createAt: Date;
+
+  @OneToMany((type) => Record, (record) => record.user)
+  record: Record[];
+
+  @OneToMany((type) => Bookmark, (bookmark) => bookmark.user)
+  bookmark: Bookmark[];
 }

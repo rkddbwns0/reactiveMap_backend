@@ -10,6 +10,10 @@ import { UserModule } from './modules/user.module';
 import { KakaoStrategy } from './kakao/kakao.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { KakaoLoginController } from './kakao/kakao.controller';
+import { Record } from './entities/record';
+import { RecordModule } from './modules/record.module';
+import { Bookmark } from './entities/bookmark';
+import { BookmarkModule } from './modules/bookmark.module';
 
 @Module({
   imports: [
@@ -29,7 +33,7 @@ import { KakaoLoginController } from './kakao/kakao.controller';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User],
+        entities: [User, Record, Bookmark],
         synchronize: true, // 엔티티와 데이터베이스 테이블 자동 동기화 여부 -> 개발모드에서만 사용할 것
         retryAttempts: 5, // 데이터베이스 재연결 시도 횟수
         retryDelay: 3000, // 데이터베이스 재연결 딜레이 시간
@@ -45,6 +49,8 @@ import { KakaoLoginController } from './kakao/kakao.controller';
     }),
     UserModule,
     KakaoModule,
+    RecordModule,
+    BookmarkModule,
   ],
   controllers: [AppController, KakaoLoginController],
   providers: [AppService, KakaoLogin, KakaoStrategy],
