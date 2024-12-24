@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import { BookmarkService } from 'src/service/bookmark.service';
 
 @Controller('bookmark')
@@ -35,9 +35,9 @@ export class BookmarkController {
   @Post('delete')
   async deleteBookmark(@Res() res: Response, @Body() body: any) {
     try {
-      const { id, place, lon, lat } = body;
+      const { id, place } = body;
 
-      await this.bookmarkService.deleteBookmark(id, place, lon, lat);
+      await this.bookmarkService.deleteBookmark(id, place);
       console.log('취소 성공공~');
       res.json({ message: '즐겨찾기 실패' });
     } catch (error) {

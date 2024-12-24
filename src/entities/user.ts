@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Record } from './record';
 import { Bookmark } from './bookmark';
+import { Gallery } from './gallery';
 
 @Entity({ name: 'user' })
 export class User {
@@ -39,4 +40,7 @@ export class User {
 
   @OneToMany((type) => Bookmark, (bookmark) => bookmark.user)
   bookmark: Bookmark[];
+
+  @OneToMany((type) => Gallery, (gallery) => gallery.user)
+  gallery: Gallery[];
 }

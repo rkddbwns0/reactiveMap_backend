@@ -14,6 +14,10 @@ import { Record } from './entities/record';
 import { RecordModule } from './modules/record.module';
 import { Bookmark } from './entities/bookmark';
 import { BookmarkModule } from './modules/bookmark.module';
+import { Gallery } from './entities/gallery';
+import { GalleryController } from './controller/gallery.controller';
+import { GalleryService } from './service/gallery.service';
+import { GalleryModule } from './modules/gallery.module';
 
 @Module({
   imports: [
@@ -33,7 +37,7 @@ import { BookmarkModule } from './modules/bookmark.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [User, Record, Bookmark],
+        entities: [User, Record, Bookmark, Gallery],
         synchronize: true, // 엔티티와 데이터베이스 테이블 자동 동기화 여부 -> 개발모드에서만 사용할 것
         retryAttempts: 5, // 데이터베이스 재연결 시도 횟수
         retryDelay: 3000, // 데이터베이스 재연결 딜레이 시간
@@ -51,6 +55,7 @@ import { BookmarkModule } from './modules/bookmark.module';
     KakaoModule,
     RecordModule,
     BookmarkModule,
+    GalleryModule,
   ],
   controllers: [AppController, KakaoLoginController],
   providers: [AppService, KakaoLogin, KakaoStrategy],

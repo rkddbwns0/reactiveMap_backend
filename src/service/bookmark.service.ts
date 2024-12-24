@@ -61,7 +61,7 @@ export class BookmarkService {
     }
   }
 
-  async deleteBookmark(id: number, place: string, lon: string, lat: string) {
+  async deleteBookmark(id: number, place: string) {
     try {
       const user = await this.userRepository.findOne({ where: { id: id } });
 
@@ -70,13 +70,14 @@ export class BookmarkService {
       }
 
       const deleteData = {
-        user: user,
+        user: user.id,
         place: place,
-        lon: lon,
-        lat: lat,
       };
 
-      await this.bookmarkRepository.delete(deleteData);
+      const deleteUser = await this.bookmarkRepository.delete({
+        user: { id: user.id },
+        place: place,
+      });
 
       console.log('즐겨찾기 취소 완료');
     } catch (error) {
