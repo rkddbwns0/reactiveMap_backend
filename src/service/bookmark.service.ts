@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  CreateBookmarkDto,
+  DeleteBookmarkDto,
+  SelectBookmarkDto,
+} from 'src/dto/bookmark.dto';
 import { Bookmark } from 'src/entities/bookmark';
 import { User } from 'src/entities/user';
 import { Repository } from 'typeorm';
@@ -15,19 +20,14 @@ export class BookmarkService {
   ) {}
 
   async selectBookmark(
-    id: number,
-    place: string,
+    input: SelectBookmarkDto,
   ): Promise<Bookmark | undefined> {
-    const user = await this.userRepository.findOne({ where: { id: id } });
-
-    console.log(user);
+    const user = await this.userRepository.findOne({ where: { id: input.id } });
 
     const bookmark = await this.bookmarkRepository.findOne({
-      where: { place: place },
+      where: { user: user },
       relations: ['user'],
     });
-
-    console.log(bookmark);
 
     if (!bookmark) {
       console.log('즐겨찾기 내역이 없음');
@@ -36,9 +36,11 @@ export class BookmarkService {
     return bookmark;
   }
 
-  async insertBookmark(id: number, place: string, lon: string, lat: string) {
+  async insertBookmark(input: CreateBookmarkDto) {
     try {
-      const user = await this.userRepository.findOne({ where: { id: id } });
+      const user = await this.userRepository.findOne({
+        where: { id: input.id },
+      });
 
       if (!user) {
         console.log('유저 정보를 찾을 수 없습니다.');
@@ -46,9 +48,7 @@ export class BookmarkService {
 
       const bookmarkData = {
         user: user,
-        place: place,
-        lon: lon,
-        lat: lat,
+        ...input,
         bookmark_at: new Date(),
       };
 
@@ -61,22 +61,19 @@ export class BookmarkService {
     }
   }
 
-  async deleteBookmark(id: number, place: string) {
+  async deleteBookmark(input: DeleteBookmarkDto) {
     try {
-      const user = await this.userRepository.findOne({ where: { id: id } });
+      const user = await this.userRepository.findOne({
+        where: { id: input.id },
+      });
 
       if (!user) {
         console.log('즐겨찾기 정보를 찾을 수 없습니다.');
       }
 
-      const deleteData = {
-        user: user.id,
-        place: place,
-      };
-
       const deleteUser = await this.bookmarkRepository.delete({
         user: { id: user.id },
-        place: place,
+        ...input,
       });
 
       console.log('즐겨찾기 취소 완료');

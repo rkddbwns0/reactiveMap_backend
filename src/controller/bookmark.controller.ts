@@ -1,5 +1,10 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
-import e, { Request, Response } from 'express';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+import {
+  CreateBookmarkDto,
+  DeleteBookmarkDto,
+  SelectBookmarkDto,
+} from 'src/dto/bookmark.dto';
 import { BookmarkService } from 'src/service/bookmark.service';
 
 @Controller('bookmark')
@@ -7,11 +12,13 @@ export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
   @Get('select')
-  async selectBookmark(@Res() res: Response, @Body() body: any) {
+  async selectBookmark(
+    @Res() res: Response,
+    @Body() selectBookmarkDto: SelectBookmarkDto,
+  ) {
     try {
-      const { id, place } = body;
-
-      const bookmark = await this.bookmarkService.selectBookmark(id, place);
+      const bookmark =
+        await this.bookmarkService.selectBookmark(selectBookmarkDto);
 
       res.json(bookmark);
     } catch (error) {
@@ -20,12 +27,12 @@ export class BookmarkController {
   }
 
   @Post('insert')
-  async insertBookmark(@Res() res: Response, @Body() body: any) {
+  async insertBookmark(
+    @Res() res: Response,
+    @Body() createBookmarkDto: CreateBookmarkDto,
+  ) {
     try {
-      const { id, place, lon, lat } = body;
-
-      await this.bookmarkService.insertBookmark(id, place, lon, lat);
-      console.log('즐겨찾기 성공공~');
+      await this.bookmarkService.insertBookmark(createBookmarkDto);
       res.json({ message: '즐겨찾기 성공' });
     } catch (error) {
       console.error(error);
@@ -33,11 +40,12 @@ export class BookmarkController {
   }
 
   @Post('delete')
-  async deleteBookmark(@Res() res: Response, @Body() body: any) {
+  async deleteBookmark(
+    @Res() res: Response,
+    @Body() deleteBoockmarkDto: DeleteBookmarkDto,
+  ) {
     try {
-      const { id, place } = body;
-
-      await this.bookmarkService.deleteBookmark(id, place);
+      await this.bookmarkService.deleteBookmark(deleteBoockmarkDto);
       console.log('취소 성공공~');
       res.json({ message: '즐겨찾기 실패' });
     } catch (error) {

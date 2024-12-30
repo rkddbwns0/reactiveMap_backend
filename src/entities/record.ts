@@ -26,6 +26,9 @@ export class Record {
   lon: string;
 
   @Column({ type: 'varchar' })
+  title: string;
+
+  @Column({ type: 'varchar' })
   content: string;
 
   @Column({ type: 'datetime' })

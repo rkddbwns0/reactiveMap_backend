@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { identity } from 'rxjs';
+import { CreateGalleryDto } from 'src/dto/gallery.dto';
 import { Gallery } from 'src/entities/gallery';
 import { User } from 'src/entities/user';
 import { Repository } from 'typeorm';
@@ -25,22 +25,16 @@ export class GalleryService {
   }
 
   async insertGallery(
-    id: number,
-    place: string,
-    lon: string,
-    lat: string,
+    input: CreateGalleryDto,
     images: Express.Multer.File[],
   ): Promise<void> {
-    let user = await this.UserRepository.findOne({ where: { id: id } });
+    let user = await this.UserRepository.findOne({ where: { id: input.id } });
 
     const image = `/${images[0].filename}`;
     console.log(images);
 
     const insertData = {
-      user: user,
-      place: place,
-      lon: lon,
-      lat: lat,
+      ...input,
       images: image,
       upload_at: new Date(),
     };
