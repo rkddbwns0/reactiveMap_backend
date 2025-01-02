@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class SelectBookmarkDto {
+export class SelectAllBookmarkDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
@@ -8,6 +8,20 @@ export class SelectBookmarkDto {
   @IsNotEmpty()
   @IsString()
   place: string;
+}
+
+export class FindBookmarkDto {
+  @IsNotEmpty()
+  @IsString()
+  place: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lon: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lat: string;
 }
 
 export class CreateBookmarkDto {

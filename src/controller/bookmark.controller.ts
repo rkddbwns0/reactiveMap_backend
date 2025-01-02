@@ -3,7 +3,8 @@ import { Response } from 'express';
 import {
   CreateBookmarkDto,
   DeleteBookmarkDto,
-  SelectBookmarkDto,
+  FindBookmarkDto,
+  SelectAllBookmarkDto,
 } from 'src/dto/bookmark.dto';
 import { BookmarkService } from 'src/service/bookmark.service';
 
@@ -14,11 +15,11 @@ export class BookmarkController {
   @Get('select')
   async selectBookmark(
     @Res() res: Response,
-    @Body() selectBookmarkDto: SelectBookmarkDto,
+    @Body() selectAllBookmarkDto: SelectAllBookmarkDto,
   ) {
     try {
       const bookmark =
-        await this.bookmarkService.selectBookmark(selectBookmarkDto);
+        await this.bookmarkService.selectBookmark(selectAllBookmarkDto);
 
       res.json(bookmark);
     } catch (error) {
@@ -29,11 +30,20 @@ export class BookmarkController {
   @Post('insert')
   async insertBookmark(
     @Res() res: Response,
+    @Body() findBookmarkDto: FindBookmarkDto,
     @Body() createBookmarkDto: CreateBookmarkDto,
   ) {
     try {
-      await this.bookmarkService.insertBookmark(createBookmarkDto);
-      res.json({ message: '즐겨찾기 성공' });
+      const result = await this.bookmarkService.insertBookmark(
+        findBookmarkDto,
+        createBookmarkDto,
+      );
+
+      if (result.success) {
+        return res.status(200).json({ success: result.success });
+      } else {
+        return res.status(200).json({ success: result.success });
+      }
     } catch (error) {
       console.error(error);
     }

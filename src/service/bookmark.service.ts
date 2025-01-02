@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateBookmarkDto,
   DeleteBookmarkDto,
-  SelectBookmarkDto,
+  FindBookmarkDto,
+  SelectAllBookmarkDto,
 } from 'src/dto/bookmark.dto';
 import { Bookmark } from 'src/entities/bookmark';
 import { User } from 'src/entities/user';
@@ -20,7 +21,7 @@ export class BookmarkService {
   ) {}
 
   async selectBookmark(
-    input: SelectBookmarkDto,
+    input: SelectAllBookmarkDto,
   ): Promise<Bookmark | undefined> {
     const user = await this.userRepository.findOne({ where: { id: input.id } });
 
@@ -36,26 +37,45 @@ export class BookmarkService {
     return bookmark;
   }
 
-  async insertBookmark(input: CreateBookmarkDto) {
+  async insertBookmark(
+    findInput: FindBookmarkDto,
+    insertInput: CreateBookmarkDto,
+  ) {
     try {
       const user = await this.userRepository.findOne({
-        where: { id: input.id },
+        where: { id: insertInput.id },
       });
 
       if (!user) {
         console.log('유저 정보를 찾을 수 없습니다.');
       }
 
+      const findData = {
+        user: { id: user.id },
+        place: findInput.place,
+        lon: findInput.lon,
+        lat: findInput.lat,
+      };
+
+      const findUser = await this.bookmarkRepository.findOne({
+        where: findData,
+      });
+
       const bookmarkData = {
         user: user,
-        ...input,
+        ...insertInput,
         bookmark_at: new Date(),
       };
 
-      const insertBookmark = await this.bookmarkRepository.create(bookmarkData);
-
-      await this.bookmarkRepository.save(insertBookmark);
-      console.log('즐겨찾기 성공');
+      if (!findUser) {
+        const insertBookmark =
+          await this.bookmarkRepository.create(bookmarkData);
+        await this.bookmarkRepository.save(insertBookmark);
+        return { success: true, message: '즐겨찾기 성공' };
+      } else {
+        await this.bookmarkRepository.delete(findData);
+        return { success: false, message: '즐겨찾기 삭제 성공' };
+      }
     } catch (error) {
       console.error(error);
     }

@@ -20,10 +20,10 @@ export class Record {
   place: string;
 
   @Column({ type: 'varchar' })
-  lat: string;
+  lon: string;
 
   @Column({ type: 'varchar' })
-  lon: string;
+  lat: string;
 
   @Column({ type: 'varchar' })
   title: string;
