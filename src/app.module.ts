@@ -18,7 +18,7 @@ import { Gallery } from './entities/gallery';
 import { GalleryController } from './controller/gallery.controller';
 import { GalleryService } from './service/gallery.service';
 import { GalleryModule } from './modules/gallery.module';
-
+import { GoogleMapsModule } from './modules/googlemaps.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -56,6 +56,7 @@ import { GalleryModule } from './modules/gallery.module';
     RecordModule,
     BookmarkModule,
     GalleryModule,
+    GoogleMapsModule,
   ],
   controllers: [AppController, KakaoLoginController],
   providers: [AppService, KakaoLogin, KakaoStrategy],
