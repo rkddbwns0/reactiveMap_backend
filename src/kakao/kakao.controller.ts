@@ -22,11 +22,7 @@ export class KakaoLoginController {
   @Get('callback')
   @UseGuards(AuthGuard('kakao'))
   @HttpCode(301)
-  async getKakaoInfo(
-    @Res() res: Response,
-    @Req() req: Request,
-    @Query('code') code: string,
-  ) {
+  async getKakaoInfo(@Res() res: Response, @Req() req: Request) {
     try {
       const { accessToken, refreshToken } = await this.kakaoLogin.getJWT(
         req.user.id,

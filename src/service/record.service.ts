@@ -17,14 +17,16 @@ export class RecordService {
 
   async selectRecord(input: SelectRecordDto) {
     let user = await this.UserRepository.findOne({ where: { id: input.id } });
+    console.log(user);
     if (!user) {
       console.log('유저 정보를 찾을 수 없습니다.');
     }
 
     try {
       const recordData = await this.RecordRepository.find({
-        where: { user: user },
+        where: { user: user.record },
       });
+      console.log(recordData);
       return recordData;
     } catch (error) {
       console.error(error);

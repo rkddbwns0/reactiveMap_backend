@@ -5,7 +5,6 @@ import { User } from 'src/entities/user';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 
 @Injectable()
 export class KakaoLogin {

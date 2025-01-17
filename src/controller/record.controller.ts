@@ -14,7 +14,7 @@ export class RecordController {
   ) {
     try {
       const result = await this.recordservice.selectRecord(selectRecordDto);
-
+      console.log(result);
       return res.json(result);
     } catch (error) {
       console.error(error);

@@ -15,8 +15,6 @@ import { RecordModule } from './modules/record.module';
 import { Bookmark } from './entities/bookmark';
 import { BookmarkModule } from './modules/bookmark.module';
 import { Gallery } from './entities/gallery';
-import { GalleryController } from './controller/gallery.controller';
-import { GalleryService } from './service/gallery.service';
 import { GalleryModule } from './modules/gallery.module';
 
 @Module({
