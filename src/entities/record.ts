@@ -13,7 +13,7 @@ export class Record {
   no: number;
 
   @ManyToOne(() => User, (user) => user.record)
-  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'varchar' })
@@ -30,6 +30,9 @@ export class Record {
 
   @Column({ type: 'varchar' })
   content: string;
+
+  @Column({ type: 'varchar' })
+  images: string;
 
   @Column({ type: 'datetime' })
   write_at: Date;
