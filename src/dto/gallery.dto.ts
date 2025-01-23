@@ -16,4 +16,8 @@ export class CreateGalleryDto {
   @IsNotEmpty()
   @IsString()
   lat: string;
+
+  @IsNotEmpty()
+  @IsString()
+  images: string;
 }

@@ -40,4 +40,8 @@ export class CreateRecordDto {
   @MinLength(3)
   @MaxLength(100)
   content: string;
+
+  @IsNotEmpty()
+  @IsString()
+  images: string;
 }
